@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>
+		{% block title %}
+		Homepage
+		{% endblock title %}
+	</title>
+	<script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+	<link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+	{% include "base/navbar.html" %}
+	{% block body %}
+	Hello world from body tag
+	{% endblock body %}
+	{% include "base/footer.html" %}
+
+</body>
+
+</html>
