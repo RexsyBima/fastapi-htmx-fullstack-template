@@ -20,6 +20,7 @@ class User(SQLModel, table=True):
     password: str = Field()
     email: str = Field(index=True)
     role: UserRole = Field(default=UserRole.USER, index=True)
+    # is_verified: bool = Field(default=False)
 
 
 engine = create_engine(sqlite_url, echo=True)

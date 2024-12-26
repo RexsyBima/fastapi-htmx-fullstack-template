@@ -1,8 +1,10 @@
 # this file should contain utility functions, personally i prefered class based utility functions where each method is live as staticmethod, but function based utility functions are also supported, feel free to modify
 
+
 # see example below
 from app import pwd_context
 from app import ALGORITHM, SECRET_KEY
+from datetime import datetime, timedelta
 import os
 import jwt
 
@@ -41,3 +43,12 @@ class JwtDecodeEncode:
     @staticmethod
     def decode(token: str) -> dict:
         return jwt.decode(token, key=SECRET_KEY, algorithms=[ALGORITHM])
+
+
+class Authentication:
+    @staticmethod
+    def create_access_token(data: dict):
+        expired_date = (datetime.now() + timedelta(days=7)).timestamp()
+        data = data.copy()
+        data.update({"exp": expired_date})
+        return JwtDecodeEncode.encode(data)
