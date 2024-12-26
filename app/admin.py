@@ -1,19 +1,17 @@
-# for using sqladmin, check how to implement here,
-# https: // aminalaee.dev/sqladmin/
+# for using sqladmin, check how to implement here, https: // aminalaee.dev/sqladmin/
 # note you should have database in order to use sqladmin (obviously)
 
-import os
-from typing import Any
-from sqladmin import authentication
-from .enums import UserRole
-from .utils import Hashing
-from sqladmin.authentication import AuthenticationBackend
-from starlette.requests import Request
-from starlette.responses import RedirectResponse
-from sqladmin import Admin, ModelView
-from . import app
-from sqlmodel import select
+from datetime import datetime, timedelta
 from .models import engine, User, session
+from sqlmodel import select
+from . import app
+from sqladmin import Admin, ModelView
+from starlette.requests import Request
+from sqladmin.authentication import AuthenticationBackend
+from .utils import Hashing, JwtDecodeEncode
+from .enums import UserRole
+from app import SECRET_KEY
+assert SECRET_KEY is not None, "Set SECRET_KEY in .env"
 
 
 class AdminAuth(AuthenticationBackend):
@@ -24,12 +22,14 @@ class AdminAuth(AuthenticationBackend):
             password, str), "Invalid password datatype, it should be a string"
         user = session.exec(select(User).where(
             User.username == username)).first()
-        assert isinstance(user, User), "User not found"
-        if user.role != UserRole.ADMIN:
+        if user is None or user.role != UserRole.ADMIN:
             return False
         if Hashing.verify_password(password, user.password):
             # TODO: do jwt authentication??
-            request.session.update({"token": user.username})
+            exp_date = datetime.now() + timedelta(minutes=30)
+            token = JwtDecodeEncode.encode(
+                {"username": user.username, "exp": exp_date})
+            request.session.update({"token": token, })
             return True
         else:
             return False
@@ -41,17 +41,22 @@ class AdminAuth(AuthenticationBackend):
     async def authenticate(self, request: Request) -> bool:
         # TODO: do jwt authentication??
         token = request.session.get("token")
-        user = session.exec(select(User).where(User.username == token)).first()
-        if user is None:
+        print(token)
+        if not isinstance(token, str):
             return False
-        if token is None or user.role != UserRole.ADMIN:
+        decodede_token = JwtDecodeEncode.decode(token)
+        # log out user if token expired
+        if int(datetime.now().timestamp()) > decodede_token["exp"]:
+            request.session.clear()
+            return False
+        user = session.exec(select(User).where(
+            User.username == decodede_token["username"])).first()
+        if token is None or user is None or user.role != UserRole.ADMIN:
             return False
         return True
 
 
-secret_key = os.getenv("SECRET_KEY")
-assert secret_key is not None, "Set SECRET_KEY in .env"
-authentication_backend = AdminAuth(secret_key=secret_key)
+authentication_backend = AdminAuth(secret_key=SECRET_KEY)
 admin = Admin(app, engine, authentication_backend=authentication_backend)
 
 
