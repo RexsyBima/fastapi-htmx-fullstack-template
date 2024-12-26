@@ -1,7 +1,9 @@
 # this file should contain utility functions, personally i prefered class based utility functions where each method is live as staticmethod, but function based utility functions are also supported, feel free to modify
 # see example below
 from app import pwd_context
+from .exc import credentials_exception
 from pydantic import BaseModel
+from jwt.exceptions import InvalidTokenError
 from app import ALGORITHM, SECRET_KEY
 from datetime import datetime, timedelta
 import jwt
@@ -42,8 +44,11 @@ class JwtDecodeEncode:
     # why the f is this working?? i mean the use of "" to declare class datatype
     def decode(token: str) -> "Authentication.TokenAuth":
         # TODO: add try except statement here, and maybe check the expiration token here?
-        decoded = Authentication .TokenAuth(
-            **jwt.decode(token, key=SECRET_KEY, algorithms=[ALGORITHM]))
+        try:
+            decoded = Authentication.TokenAuth(
+                **jwt.decode(token, key=SECRET_KEY, algorithms=[ALGORITHM]))
+        except InvalidTokenError:
+            raise credentials_exception
         return decoded
 
 
@@ -55,7 +60,7 @@ class Authentication:
 
     @staticmethod
     def create_access_token(data: dict):
-        expired_date = (datetime.now() + timedelta(days=7)).timestamp()
+        expired_date = int((datetime.now() + timedelta(days=7)).timestamp())
         data = data.copy()
         data.update({"exp": expired_date})
         return JwtDecodeEncode.encode(Authentication.TokenAuth(**data))
