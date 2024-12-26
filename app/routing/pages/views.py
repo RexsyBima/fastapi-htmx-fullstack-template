@@ -1,5 +1,12 @@
 from . import router
+from typing import Annotated
 from app import templates
+from fastapi import Depends
+from app.depends import get_current_user
+from app.models import User
+from app.utils import JwtDecodeEncode
+from app.utils import Authentication
+
 from fastapi import Request, Response
 
 
@@ -15,8 +22,8 @@ async def login(request: Request):
 
 @router.get("/get_token")
 # TODO: implement this somewhere else?
-async def get_token(request: Request, ):
-    return request.session.get("token")
+async def get_token(request: Request, user: Annotated[Authentication.TokenAuth, Depends(get_current_user)]):
+    return user
 
 
 @router.get("/del_token")
