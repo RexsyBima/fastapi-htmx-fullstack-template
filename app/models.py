@@ -7,12 +7,20 @@
 
 # example, combination with Enum datatype
 
-# from sqlmodel import SQLModel, Field
-# from .enums import UserRole
-#
-#
-# class User(SQLModel, table=True):
-#     id: int = Field(primary_key=True)
-#     username: str = Field(index=True)
-#     email: str = Field(index=True)
-#     role: UserRole = Field(default=UserRole.USER, index=True)
+from sqlmodel import SQLModel, Field, create_engine, Session
+
+from .enums import UserRole
+sqlite_filename = "database.db"
+sqlite_url = "sqlite:///" + sqlite_filename
+
+
+class User(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    username: str = Field(index=True)
+    password: str = Field()
+    email: str = Field(index=True)
+    role: UserRole = Field(default=UserRole.USER, index=True)
+
+
+engine = create_engine(sqlite_url, echo=True)
+session = Session(engine)
