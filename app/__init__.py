@@ -19,4 +19,5 @@ app.mount("/static", StaticFiles(directory="app/static/"), name="static")
 
 templates = Jinja2Templates(directory="app/templates")
 
+from .admin import *  # noqa
 from . import routes  # noqa

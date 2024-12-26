@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import os
 from app.models import User, session
 from app.enums import UserRole
+from app.utils import Hashing
 
 load_dotenv()
 
@@ -16,9 +17,11 @@ if password != ADMIN_PASSWORD:
 username = input("Input username : ")
 password = input("Input admin password: ")
 # TODO: implement hashing in utils.py
+pw_hash = Hashing.hash_password(password)
 
 
 user = User(username=username, email="superadmin@gmail.com",
-            password=password, role=UserRole.ADMIN)
+            password=pw_hash, role=UserRole.ADMIN)
 
 session.add(user)
+session.commit()
