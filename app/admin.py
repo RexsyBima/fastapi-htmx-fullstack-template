@@ -26,10 +26,9 @@ class AdminAuth(AuthenticationBackend):
         if user is None or user.role != UserRole.ADMIN:
             return False
         if Hashing.verify_password(password, user.password):
-            # TODO: do jwt authentication??
             exp_date = datetime.now() + timedelta(minutes=30)
             payload = Authentication.TokenAuth(
-                # TODO: you could do that, but why, why would you do that?
+                # NOTE: you could do that, but why, why would you do that?
                 **{"username": user.username, "exp": exp_date})
             token = JwtDecodeEncode.encode(payload)
             request.session.update({"token": token, })

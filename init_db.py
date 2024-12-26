@@ -1,7 +1,10 @@
 # run this file to create database
-import os  # TODO: -> check if database.db already exists, if exists, dont create database
+import os
 from app.models import *
 from sqlmodel import create_engine, SQLModel
+
+if os.path.exists("database.db"):
+    raise Exception("database.db already exists")
 
 # we use sqlite3 for simplicity
 sqlite_filename = "database.db"
