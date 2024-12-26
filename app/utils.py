@@ -43,7 +43,7 @@ class JwtDecodeEncode:
     @staticmethod
     # why the f is this working?? i mean the use of "" to declare class datatype
     def decode(token: str) -> "Authentication.TokenAuth":
-        # TODO: add try except statement here, and maybe check the expiration token here?
+        # TODO: maybe check the expiration token here? or it should live as dependency injection?
         try:
             decoded = Authentication.TokenAuth(
                 **jwt.decode(token, key=SECRET_KEY, algorithms=[ALGORITHM]))
@@ -54,6 +54,7 @@ class JwtDecodeEncode:
 
 class Authentication:
     # How authentication works, please check this video by fireship https://www.youtube.com/watch?v=UBUNrFtufWo
+    # Below is cool, but is it necessary?? NOTE :
     class TokenAuth(BaseModel):
         sub: str
         exp: int

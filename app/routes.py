@@ -10,4 +10,6 @@ app.include_router(apis.router)
 
 
 # This is used so we can do things with request.session
+# You must use .add_middleware method after defining or including all router above
+# check here https://github.com/fastapi/fastapi/issues/4746#issuecomment-1141134939
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
