@@ -25,7 +25,7 @@ class AdminAuth(AuthenticationBackend):
             User.username == username)).first()
         if user is None or user.role != UserRole.ADMIN:
             return False
-        if Hashing.verify_password(password, user.password):
+        if Hashing.verify_password(password, user.password) and user.role == UserRole.ADMIN or user.role == UserRole.STAFF:
             exp_date = int(
                 (datetime.now() + timedelta(minutes=30)).timestamp())
             payload = Authentication.TokenAuth(
