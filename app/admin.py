@@ -1,6 +1,7 @@
 # for using sqladmin, check how to implement here, https: // aminalaee.dev/sqladmin/
 # note you should have database in order to use sqladmin (obviously)
 
+
 from datetime import datetime, timedelta
 from .models import engine, User, session
 from sqlmodel import select
@@ -8,7 +9,7 @@ from . import app
 from sqladmin import Admin, ModelView
 from starlette.requests import Request
 from sqladmin.authentication import AuthenticationBackend
-from .utils import Hashing, JwtDecodeEncode
+from .utils import Hashing, JwtDecodeEncode, Authentication
 from .enums import UserRole
 from app import SECRET_KEY
 assert SECRET_KEY is not None, "Set SECRET_KEY in .env"
@@ -27,8 +28,10 @@ class AdminAuth(AuthenticationBackend):
         if Hashing.verify_password(password, user.password):
             # TODO: do jwt authentication??
             exp_date = datetime.now() + timedelta(minutes=30)
-            token = JwtDecodeEncode.encode(
-                {"username": user.username, "exp": exp_date})
+            payload = Authentication.TokenAuth(
+                # TODO: you could do that, but why, why would you do that?
+                **{"username": user.username, "exp": exp_date})
+            token = JwtDecodeEncode.encode(payload)
             request.session.update({"token": token, })
             return True
         else:
@@ -41,16 +44,15 @@ class AdminAuth(AuthenticationBackend):
     async def authenticate(self, request: Request) -> bool:
         # TODO: do jwt authentication??
         token = request.session.get("token")
-        print(token)
         if not isinstance(token, str):
             return False
-        decodede_token = JwtDecodeEncode.decode(token)
+        decoded_token = JwtDecodeEncode.decode(token)
         # log out user if token expired
-        if int(datetime.now().timestamp()) > decodede_token["exp"]:
+        if int(datetime.now().timestamp()) > decoded_token.exp:
             request.session.clear()
             return False
         user = session.exec(select(User).where(
-            User.username == decodede_token["username"])).first()
+            User.username == decoded_token.sub)).first()
         if token is None or user is None or user.role != UserRole.ADMIN:
             return False
         return True

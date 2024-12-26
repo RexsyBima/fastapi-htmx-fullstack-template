@@ -51,7 +51,7 @@ class Authentication:
     # How authentication works, please check this video by fireship https://www.youtube.com/watch?v=UBUNrFtufWo
     class TokenAuth(BaseModel):
         sub: str
-        exp: datetime | int
+        exp: int
 
     @staticmethod
     def create_access_token(data: dict):

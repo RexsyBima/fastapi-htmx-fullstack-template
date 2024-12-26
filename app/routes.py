@@ -9,4 +9,5 @@ app.include_router(htmx.router)
 app.include_router(apis.router)
 
 
+# This is used so we can do things with request.session
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)

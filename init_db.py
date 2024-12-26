@@ -1,5 +1,5 @@
 # run this file to create database
-import os  # todo -> check if database.db already exists, if exists, dont create database
+import os  # TODO: -> check if database.db already exists, if exists, dont create database
 from app.models import *
 from sqlmodel import create_engine, SQLModel
 

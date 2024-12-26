@@ -16,7 +16,6 @@ if password != ADMIN_PASSWORD:
 
 username = input("Input username : ")
 password = input("Input admin password: ")
-# TODO: implement hashing in utils.py
 pw_hash = Hashing.hash_password(password)
 
 
