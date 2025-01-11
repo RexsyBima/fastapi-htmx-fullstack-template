@@ -1,12 +1,14 @@
 # this file should contain utility functions, personally i prefered class based utility functions where each method is live as staticmethod, but function based utility functions are also supported, feel free to modify
 # see example below
+from datetime import datetime, timedelta
 from app import pwd_context
 from .exc import credentials_exception
 from pydantic import BaseModel
 from jwt.exceptions import InvalidTokenError
 from app import ALGORITHM, SECRET_KEY
-from datetime import datetime, timedelta
 import jwt
+
+assert SECRET_KEY is not None, "Set SECRET_KEY in .env"
 
 
 class Utils1:
@@ -47,6 +49,7 @@ class JwtDecodeEncode:
         try:
             decoded = Authentication.TokenAuth(
                 **jwt.decode(token, key=SECRET_KEY, algorithms=[ALGORITHM]))
+            timenow = int(datetime.now().timestamp())
         except InvalidTokenError:
             raise credentials_exception
         return decoded

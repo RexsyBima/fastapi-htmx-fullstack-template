@@ -16,9 +16,9 @@ sqlite_url = "sqlite:///" + sqlite_filename
 
 class User(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    username: str = Field(index=True)  # TODO: should be unique
-    password: str = Field()
-    email: str = Field(index=True)
+    username: str = Field(index=True, unique=True)  # TODO: should be unique
+    password: str = Field()  # NOTE: should be hashed
+    email: str = Field(index=True, unique=True)
     role: UserRole = Field(default=UserRole.USER, index=True)
     # is_verified: bool = Field(default=False)
 

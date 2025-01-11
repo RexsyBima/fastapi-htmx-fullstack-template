@@ -11,6 +11,7 @@ ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
 assert ADMIN_PASSWORD is not None, "Set ADMIN_PASSWORD in .env"
 
 password = input("Login: ")
+# TODO: add password to be verified using hashing
 if password != ADMIN_PASSWORD:
     raise Exception("Wrong password")
 

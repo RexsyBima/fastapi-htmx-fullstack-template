@@ -52,7 +52,7 @@ class AdminAuth(AuthenticationBackend):
             return False
         user = session.exec(select(User).where(
             User.username == decoded_token.sub)).first()
-        if token is None or user is None or user.role != UserRole.ADMIN:
+        if token is None or user is None or user.role != UserRole.ADMIN or user.role != UserRole.STAFF:
             return False
         return True
 
